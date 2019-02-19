@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { getTweets, getTweetsByUsername } = require("../db/tweets");
+const { getTweets, getTweetsByUsername, createTweet } = require("../db/tweets");
 
 // GET /api/v1/tweets
 router.get("/", (req, res) => {
@@ -10,26 +10,36 @@ router.get("/", (req, res) => {
     })
     .catch(err => {
       console.log(err);
-      res.status(500).json({ error: "Somthing went wrong" });
+      res.status(500).json({ error: "Something went wrong" });
     });
 });
 
 // POST /api/v1/tweets
-router.post("/", (req, res) => {
-  res.json({
-    id: 6
-  });
+router.post("/:username", (req, res) => {
+  const tweet = {
+    username: req.params.username,
+    text: req.body.text
+  };
+
+  createTweet(tweet)
+    .then(([id]) => {
+      res.json({ id });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({ error: "Something went wrong" });
+    });
 });
 
 // GET /api/v1/tweets/:username
-router.get("/", (req, res) => {
+router.get("/:username", (req, res) => {
   getTweetsByUsername(req.params.username)
     .then(tweets => {
       res.json(tweets);
     })
     .catch(err => {
       console.log(err);
-      res.status(500).json({ error: "Somthing went wrong" });
+      res.status(500).json({ error: "Something went wrong" });
     });
 });
 
